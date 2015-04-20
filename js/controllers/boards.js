@@ -19,7 +19,7 @@ function ($scope, $routeParams, $location, $interval, $window,
     $scope.alerts = AlertService;
     $scope.marked = function(text) {
         if (text) {
-            return $window.marked(text);
+            return $window.marked(hyperlink(text));
         } else {
             return "<p>No Description</p>";
         }
