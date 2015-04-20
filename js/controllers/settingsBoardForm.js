@@ -1,6 +1,8 @@
 taskBoardControllers.controller('BoardFormSettingsCtrl',
 ['$scope', 'BoardService',
 function ($scope, BoardService) {
+    var defaultColor = '#ffffe0';
+
     $scope.boardFormData = {
         setFocus: false,
         boardId: 0,
@@ -10,6 +12,7 @@ function ($scope, BoardService) {
         laneName: '',
         categories: [],
         categoryName: '',
+        color: defaultColor,
         users: [],
         nameError: false,
         lanesError: false,
@@ -52,7 +55,8 @@ function ($scope, BoardService) {
                 board.ownCategory.forEach(function(cat) {
                     that.categories.push({
                         id: cat.id,
-                        name: cat.name
+                        name: cat.name,
+                        color: cat.color
                     });
                 });
             }
@@ -117,7 +121,8 @@ function ($scope, BoardService) {
             if (!this.categoriesError) {
                 this.categories.push({
                     id: 0,
-                    name: this.categoryName
+                    name: this.categoryName,
+                    color: this.color
                 });
             }
             this.categoryName = '';
@@ -148,6 +153,9 @@ function ($scope, BoardService) {
             this.laneName = '';
             this.categories = [];
             this.categoryName = '';
+            this.color = defaultColor;
+            $('#spectrum').spectrum('enable');
+            $scope.spectrum(defaultColor);
             this.users = [];
             this.nameError = false;
             this.lanesError = false;
@@ -157,6 +165,8 @@ function ($scope, BoardService) {
         // Uses jQuery to close modal and reset form data.
         cancel: function() {
             $('.boardModal').modal('hide');
+            $('#spectrum').spectrum('hide');
+            $('#spectrum').spectrum('enable');
             var that = this;
             $('.boardModal').on('hidden.bs.modal', function (e) {
                 that.reset();
@@ -165,8 +175,24 @@ function ($scope, BoardService) {
     };
     $scope.$parent.boardFormData = $scope.boardFormData;
 
+    $scope.spectrum = function(color) {
+        color = color || defaultColor;
+        $('#spectrum').spectrum({
+            color: color,
+            allowEmpty: false,
+            localStorageKey: 'taskboard.colorPalette',
+            showPalette: true,
+            palette: [ ['#fff', '#ececec', '#ffffe0', '#ffe0fa', '#bee7f4', '#c3f4b5', '#debee8', '#ffdea9', '#ffbaba'] ],
+            showSelectionPalette: true,
+            showButtons: false,
+            showInput: true,
+            preferredFormat: 'hex3',
+        });
+    };
     $scope.addBoard = function(boardFormData) {
         boardFormData.setForSaving();
+        $('#spectrum').spectrum('disable');
+
         if (!checkFormInputs(boardFormData)) {
             return;
         }
@@ -185,6 +211,8 @@ function ($scope, BoardService) {
 
     $scope.editBoard = function(boardFormData) {
         boardFormData.setForSaving();
+        $('#spectrum').spectrum('disable');
+
         if (!checkFormInputs(boardFormData)) {
             return;
         }
@@ -200,6 +228,40 @@ function ($scope, BoardService) {
             }
         });
     };
+
+    $scope.editedCategory = {};
+    $scope.editColor = function(category) {
+        if ($scope.editedCategory.id === undefined)
+        {
+            $scope.editedCategory.id = category.id;
+            $scope.editedCategory.name = category.name;
+
+            $scope.editedCategory.color = $scope.boardFormData.color;
+            $scope.spectrum(category.color);
+        }
+        else if (($scope.editedCategory.id != category.id) &&
+                ($scope.editedCategory.name != category.name))
+        {
+            $scope.spectrum()
+            $scope.editedCategory = {};
+        }
+    };
+    $scope.storeColor = function(e) {
+        if (e.which === 13) { // Enter key 
+            $scope.boardFormData.categories.forEach(function(cat){
+                if ((cat.id == $scope.editedCategory.id) && 
+                   (cat.name == $scope.editedCategory.name))
+                    cat.color = $scope.boardFormData.color;
+            });
+            $scope.spectrum();
+            $scope.editedCategory = {};
+        }
+        else if (e.which === 27) { // Escape key
+            $scope.spectrum();
+	    $scope.editedCategory = {};
+        }
+    }; 
+
 
     var checkFormInputs = function(boardFormData) {
         if ('' === boardFormData.name) {

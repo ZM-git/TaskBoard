@@ -168,9 +168,9 @@ function ($scope, $routeParams, $location, $interval, $window,
                             });
                         }
                     });
-
+                    var defaultColor = '#ffffe0';
                     if (board.ownCategory) {
-                        board.ownCategory.unshift({ id: 0, name: 'Uncategorized' });
+                        board.ownCategory.unshift({ id: 0, name: 'Uncategorized', color: defaultColor });
                         board.ownCategory.forEach(function(category) {
                             $scope.categories[category.id] = category.name;
                         });

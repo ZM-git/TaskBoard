@@ -56,7 +56,7 @@
                          data-ng-class="{'filtered': item.filtered, 'hidden': item.filtered && filter.hide}"
                          data-ng-repeat="item in lane.ownItem | orderBy:'position':false"
                          data-ng-dblclick="openItem(item)"
-                         style="background-color: {{ item.color }}"
+                         data-ng-style="{'background-color': setColor(item)}"
                          data-item-id="{{ item.id }}"
                          data-context-menu="onContextMenu(lane.id, item)" data-target="itemMenu">
                         <div class="itemHeader">

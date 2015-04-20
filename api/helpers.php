@@ -184,6 +184,7 @@ function loadBoardData($board, $data) {
     foreach($data->categories as $item) {
         $category = R::load('category', $item->id);
         $category->name = $item->name;
+        $category->color = $item->color;
 
         // New category, add it to the board.
         if (!$category->id) {

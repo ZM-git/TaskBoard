@@ -27,6 +27,7 @@ function ($scope, UserService, AlertService) {
     $scope.loadCurrentUser();
 
     $scope.updateBoardsList = function(data) {
+        $('#spectrum').spectrum('enable'); 
         if (undefined === data) {
             return;
         }
